@@ -31,6 +31,12 @@ agent-sonos-configure-hooks --bin-dir /opt/homebrew/bin
 
 Restart Codex and Claude Code after running the config helper.
 
+To remove the hooks later:
+
+```bash
+agent-sonos-configure-hooks --remove
+```
+
 ## Requirements
 
 - macOS or Linux shell environment
@@ -188,6 +194,9 @@ Run a playback test for one room:
 agent-sonos-diagnose --room Kitchen --play-test
 ```
 
+Warnings include a `fix:` line when the next step is known. Diagnostics are
+read-only unless `--play-test` is passed.
+
 ## Homebrew Tap
 
 The Homebrew formula lives in `dairyfarmer23/homebrew-agent-sonos-chime`.
@@ -229,6 +238,12 @@ AGENT_CHIME_VOLUME=40 \
 
 ## Troubleshooting
 
+Check setup first:
+
+```bash
+agent-sonos-diagnose --room "Kitchen"
+```
+
 If Sonos discovery fails on macOS, check System Settings:
 
 `Privacy & Security -> Local Network`
@@ -244,6 +259,19 @@ AGENT_CHIME_COOLDOWN_SECONDS=0 AGENT_CHIME_SONOS_ROOM="Kitchen" ~/.local/bin/cod
 
 If grouped playback is not synced, use `AGENT_CHIME_SONOS_ROOM=all` so the script
 uses Sonos grouping before playback.
+
+If hooks stop working after an install path change, re-run:
+
+```bash
+agent-sonos-configure-hooks --remove
+agent-sonos-configure-hooks --bin-dir /opt/homebrew/bin
+```
+
+For a Claude project with its own settings:
+
+```bash
+agent-sonos-configure-hooks --claude-project /path/to/project
+```
 
 ## Known Limits
 

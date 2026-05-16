@@ -1,0 +1,52 @@
+name: Bug report
+description: Report an install, hook, or Sonos playback problem.
+title: "[Bug]: "
+labels: ["bug"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: What happened?
+      description: Describe what you expected and what actually happened.
+    validations:
+      required: true
+  - type: dropdown
+    id: install-method
+    attributes:
+      label: Install method
+      options:
+        - Homebrew
+        - curl installer
+        - git clone
+        - other
+    validations:
+      required: true
+  - type: dropdown
+    id: agent
+    attributes:
+      label: Agent
+      options:
+        - Codex
+        - Claude Code
+        - both
+        - not sure
+    validations:
+      required: true
+  - type: input
+    id: room
+    attributes:
+      label: Sonos room name
+      placeholder: Kitchen
+  - type: textarea
+    id: diagnose
+    attributes:
+      label: agent-sonos-diagnose output
+      description: Run `agent-sonos-diagnose --room "Kitchen"` and paste the output. Redact local paths if needed.
+      render: text
+    validations:
+      required: true
+  - type: textarea
+    id: notes
+    attributes:
+      label: Extra context
+      description: Include macOS version, shell, or anything unusual about your Sonos/network setup.
