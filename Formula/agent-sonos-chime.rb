@@ -28,10 +28,10 @@ class AgentSonosChime < Formula
         python3 -m pip install --user edge-tts
 
       Generate alert audio:
-        AGENT_CHIME_AUDIO_DIR="$HOME/.local/share/agent-sonos-chime" #{pkgshare}/generate-alert-audio.sh
+        AGENT_CHIME_AUDIO_DIR="$HOME/.local/share/agent-sonos-chime" #{opt_pkgshare}/generate-alert-audio.sh
 
       Configure hooks:
-        agent-sonos-configure-hooks --bin-dir #{bin}
+        agent-sonos-configure-hooks --bin-dir #{HOMEBREW_PREFIX}/bin
 
       Diagnose setup:
         agent-sonos-diagnose
