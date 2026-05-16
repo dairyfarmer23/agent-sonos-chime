@@ -1,7 +1,7 @@
 class AgentSonosChime < Formula
   desc "Synced Sonos alerts for Codex and Claude Code hooks"
   homepage "https://github.com/dairyfarmer23/agent-sonos-chime"
-  url "https://github.com/dairyfarmer23/agent-sonos-chime.git", tag: "v0.2.0"
+  url "https://github.com/dairyfarmer23/agent-sonos-chime.git", tag: "v0.2.1"
   license "MIT"
 
   depends_on "ffmpeg"
@@ -19,8 +19,6 @@ class AgentSonosChime < Formula
 
   def caveats
     <<~EOS
-      Experimental formula. A dedicated Homebrew tap may replace this in a later release.
-
       Required separately:
         brew install steipete/tap/sonoscli
 

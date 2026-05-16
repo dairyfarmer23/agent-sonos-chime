@@ -1,0 +1,31 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Shell syntax
+        run: bash -n bin/*.sh scripts/*.sh
+
+      - name: Python compile
+        run: python3 -m py_compile scripts/configure-hooks.py scripts/diagnose.py
+
+      - name: Ruby formula syntax
+        run: ruby -c Formula/agent-sonos-chime.rb
+
+      - name: Config fixtures
+        run: scripts/config-fixtures-test.sh
+
+      - name: Secret and path scan
+        run: |
+          ! grep -RInE '(bearer|token|secret|password|api[_-]?key|gho_|sk-|x_bearer|authorization:|/Users/lanabnew|Lanas-MacBook|prettyruination)' . \
+            --exclude-dir=.git \
+            --exclude=SECURITY.md \
+            --exclude=README.md \
+            --exclude=ci.yml
