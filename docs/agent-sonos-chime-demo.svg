@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="980" height="420" viewBox="0 0 980 420" role="img" aria-labelledby="title desc">
+  <title id="title">Agent Sonos Chime demo</title>
+  <desc id="desc">A terminal-style diagram showing an agent finishing, a notify hook firing, a Sonos alert playing, and speaker state restoring.</desc>
+  <rect width="980" height="420" rx="14" fill="#101418"/>
+  <rect x="24" y="24" width="932" height="372" rx="10" fill="#151b20" stroke="#2d3942"/>
+  <circle cx="52" cy="50" r="6" fill="#ff5f57"/>
+  <circle cx="74" cy="50" r="6" fill="#febc2e"/>
+  <circle cx="96" cy="50" r="6" fill="#28c840"/>
+  <text x="40" y="94" fill="#9fb2bf" font-family="Menlo, Consolas, monospace" font-size="18">$ codex task</text>
+  <text x="40" y="132" fill="#d9e6ee" font-family="Menlo, Consolas, monospace" font-size="18">✓ turn ended</text>
+  <text x="40" y="170" fill="#d9e6ee" font-family="Menlo, Consolas, monospace" font-size="18">→ notify wrapper fired</text>
+  <text x="40" y="208" fill="#d9e6ee" font-family="Menlo, Consolas, monospace" font-size="18">→ stopped rooms grouped under Kitchen</text>
+  <text x="40" y="246" fill="#8fe388" font-family="Menlo, Consolas, monospace" font-size="18">🔊 “Codex needs you. Please check in.”</text>
+  <text x="40" y="284" fill="#d9e6ee" font-family="Menlo, Consolas, monospace" font-size="18">→ volumes restored</text>
+  <text x="40" y="322" fill="#d9e6ee" font-family="Menlo, Consolas, monospace" font-size="18">→ original groups restored</text>
+  <rect x="640" y="94" width="240" height="210" rx="8" fill="#0f1519" stroke="#33424d"/>
+  <text x="670" y="140" fill="#d9e6ee" font-family="Menlo, Consolas, monospace" font-size="17">Kitchen</text>
+  <text x="670" y="178" fill="#d9e6ee" font-family="Menlo, Consolas, monospace" font-size="17">Living Room</text>
+  <text x="670" y="216" fill="#d9e6ee" font-family="Menlo, Consolas, monospace" font-size="17">Bathroom</text>
+  <text x="670" y="254" fill="#8fe388" font-family="Menlo, Consolas, monospace" font-size="17">synced alert</text>
+</svg>

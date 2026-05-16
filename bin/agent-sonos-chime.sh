@@ -15,6 +15,16 @@ COORDINATOR="${AGENT_CHIME_SONOS_COORDINATOR:-Kitchen}"
 COOLDOWN_SECONDS="${AGENT_CHIME_COOLDOWN_SECONDS:-20}"
 STAMP_FILE="${TMPDIR:-/tmp}/agent-sonos-chime-${USER:-user}.stamp"
 LOG_FILE="${TMPDIR:-/tmp}/agent-sonos-chime.log"
+RUN_LOG="/dev/null"
+if [[ "${AGENT_CHIME_DEBUG:-}" == "1" ]]; then
+  RUN_LOG="$LOG_FILE"
+fi
+
+debug_log() {
+  if [[ "${AGENT_CHIME_DEBUG:-}" == "1" ]]; then
+    printf '[%s] %s\n' "$(date -Iseconds)" "$*" >> "$LOG_FILE" 2>/dev/null || true
+  fi
+}
 
 now="$(date +%s)"
 last="0"
@@ -23,11 +33,13 @@ if [[ -f "$STAMP_FILE" ]]; then
 fi
 
 if [[ "$last" =~ ^[0-9]+$ ]] && (( now - last < COOLDOWN_SECONDS )); then
+  debug_log "cooldown active; skipping"
   exit 0
 fi
 printf '%s\n' "$now" > "$STAMP_FILE" 2>/dev/null || true
 
 mac_chime() {
+  debug_log "falling back to local Mac sound"
   if command -v afplay >/dev/null 2>&1 && [[ -f "$SOUND" ]]; then
     afplay "$SOUND" >/dev/null 2>&1 &
   elif command -v afplay >/dev/null 2>&1; then
@@ -36,11 +48,13 @@ mac_chime() {
 }
 
 if ! command -v sonos >/dev/null 2>&1 || ! command -v ffmpeg >/dev/null 2>&1 || [[ ! -f "$SOUND" ]]; then
+  debug_log "missing sonos, ffmpeg, or sound file; sound=$SOUND"
   mac_chime
   exit 0
 fi
 
 (
+  debug_log "starting Sonos alert room=$ROOM coordinator=$COORDINATOR volume=$VOLUME sound=$SOUND"
   original_groups_file="${TMPDIR:-/tmp}/agent-sonos-chime-groups-${USER:-user}.json"
   sonos group status --format json > "$original_groups_file" 2>/dev/null || true
 
@@ -54,6 +68,7 @@ fi
   fi
 
   if (( ${#rooms[@]} == 0 )); then
+    debug_log "no rooms discovered"
     mac_chime
     exit 0
   fi
@@ -70,6 +85,7 @@ fi
     original_volume="$(printf '%s' "$status" | /usr/bin/python3 -c 'import json,sys; data=json.load(sys.stdin); print(data.get("volume",""))' 2>/dev/null || true)"
 
     if [[ "$state" != "STOPPED" ]]; then
+      debug_log "skipping active room=$room state=$state"
       continue
     fi
 
@@ -78,6 +94,7 @@ fi
   done
 
   if (( ${#eligible_rooms[@]} == 0 )); then
+    debug_log "no stopped rooms eligible"
     mac_chime
     exit 0
   fi
@@ -112,6 +129,7 @@ fi
   fi
 
   sonos play-url --name "$coordinator" "file://$SOUND" --title "Agent ready" --timeout 30s >/dev/null 2>&1 || true
+  debug_log "played alert via coordinator=$coordinator eligible_rooms=${eligible_rooms[*]}"
 
   if (( ${#eligible_rooms[@]} > 1 )); then
     sonos group dissolve --name "$coordinator" >/dev/null 2>&1 || true
@@ -149,6 +167,6 @@ PY
       sleep 0.2
     done
   fi
-) </dev/null >"$LOG_FILE" 2>&1 &
+) </dev/null >>"$RUN_LOG" 2>&1 &
 
 exit 0

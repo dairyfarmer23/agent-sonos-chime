@@ -17,6 +17,17 @@ local Sonos network and local hook configuration.
 - Restores volume and grouping after playback.
 - Falls back to a Mac sound if Sonos is unavailable.
 
+## Quick Start
+
+```bash
+brew install steipete/tap/sonoscli ffmpeg
+python3 -m pip install --user edge-tts
+curl -fsSL https://raw.githubusercontent.com/dairyfarmer23/agent-sonos-chime/main/scripts/install-remote.sh | bash
+~/.local/bin/agent-sonos-configure-hooks
+```
+
+Restart Codex and Claude Code after running the config helper.
+
 ## Requirements
 
 - macOS or Linux shell environment
@@ -36,10 +47,24 @@ or generate audio with the fallback macOS `say` voice.
 
 ## Install
 
+Preferred one-command install:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/dairyfarmer23/agent-sonos-chime/main/scripts/install-remote.sh | bash
+```
+
+Git clone fallback:
+
 ```bash
 git clone https://github.com/dairyfarmer23/agent-sonos-chime.git
 cd agent-sonos-chime
 scripts/install.sh
+```
+
+Then patch Codex and Claude Code configs:
+
+```bash
+~/.local/bin/agent-sonos-configure-hooks
 ```
 
 Test discovery:
@@ -64,8 +89,15 @@ AGENT_CHIME_COOLDOWN_SECONDS=0 ~/.local/bin/codex-sonos-chime.sh
 
 ## Configure Claude Code
 
-Add the hook entries from [examples/claude-settings.json](examples/claude-settings.json)
-to `~/.claude/settings.json`.
+Run the config helper:
+
+```bash
+~/.local/bin/agent-sonos-configure-hooks --claude-only
+```
+
+Or manually add the hook entries from
+[examples/claude-settings.json](examples/claude-settings.json) to
+`~/.claude/settings.json`.
 
 The important command is:
 
@@ -82,8 +114,15 @@ Restart Claude Code after changing settings.
 
 ## Configure Codex
 
-Add the notify wrapper from [examples/codex-config.toml](examples/codex-config.toml)
-to `~/.codex/config.toml`.
+Run the config helper:
+
+```bash
+~/.local/bin/agent-sonos-configure-hooks --codex-only
+```
+
+Or manually add the notify wrapper from
+[examples/codex-config.toml](examples/codex-config.toml) to
+`~/.codex/config.toml`.
 
 The important command is:
 
@@ -104,6 +143,21 @@ If you already have a Codex desktop notifier command, preserve it by setting
 `CODEX_DESKTOP_NOTIFY` before invoking the wrapper, or edit the wrapper to call
 your existing notifier first.
 
+## Experimental Homebrew Formula
+
+This repo includes a starter formula in `Formula/agent-sonos-chime.rb`.
+
+From a checkout:
+
+```bash
+brew install --build-from-source ./Formula/agent-sonos-chime.rb
+AGENT_CHIME_AUDIO_DIR="$HOME/.local/share/agent-sonos-chime" \
+  /opt/homebrew/opt/agent-sonos-chime/share/agent-sonos-chime/generate-alert-audio.sh
+agent-sonos-configure-hooks --bin-dir /opt/homebrew/bin
+```
+
+The formula is experimental until it moves to a dedicated Homebrew tap.
+
 ## Environment Variables
 
 | Variable | Default | Purpose |
@@ -114,6 +168,7 @@ your existing notifier first.
 | `AGENT_CHIME_SOUND` | Codex alert MP3 | Audio file to play |
 | `AGENT_CHIME_FAILURE_SOUND` | Codex failure MP3 | Audio file for failed Codex notify events |
 | `AGENT_CHIME_COOLDOWN_SECONDS` | `20` | Minimum seconds between alerts |
+| `AGENT_CHIME_DEBUG` | unset | Set to `1` to write debug logs under `/tmp` |
 
 Example:
 
@@ -148,3 +203,20 @@ AGENT_CHIME_COOLDOWN_SECONDS=0 AGENT_CHIME_SONOS_ROOM="Kitchen" ~/.local/bin/cod
 
 If grouped playback is not synced, use `AGENT_CHIME_SONOS_ROOM=all` so the script
 uses Sonos grouping before playback.
+
+## Known Limits
+
+- Codex and Claude Code may need a restart before config changes take effect.
+- Claude project-level `.claude/settings.json` files can override or supplement
+  global hooks; patch those project settings if a specific workspace does not
+  chime on `Stop`.
+- Sonos discovery requires local-network access from the app or terminal running
+  the hook.
+- Rooms that are already playing audio are skipped so the alert does not
+  interrupt music or TV playback.
+- The Homebrew formula in `Formula/` is experimental until this project has a
+  dedicated tap.
+
+## Demo
+
+See [docs/demo.md](docs/demo.md).
