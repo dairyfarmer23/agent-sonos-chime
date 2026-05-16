@@ -12,6 +12,16 @@ import subprocess
 from pathlib import Path
 from typing import Optional
 
+AGENT_COMMANDS = [
+    "agent-sonos-chime.sh",
+    "codex-sonos-chime.sh",
+    "codex-notify-sonos-wrapper.sh",
+    "claude-code-sonos-chime.sh",
+    "agent-sonos-configure-hooks",
+    "agent-sonos-diagnose",
+    "agent-sonos-uninstall",
+]
+
 
 def status(ok: bool, label: str, detail: str = "", fix: str = "") -> str:
     prefix = "OK" if ok else "WARN"
@@ -29,6 +39,16 @@ def run(args: list[str], timeout: int = 8) -> tuple[int, str]:
     return proc.returncode, (proc.stdout + proc.stderr).strip()
 
 
+def homebrew_prefix() -> Optional[Path]:
+    brew = shutil.which("brew")
+    if not brew:
+        return None
+    code, output = run([brew, "--prefix"], timeout=8)
+    if code != 0 or not output:
+        return None
+    return Path(output.splitlines()[0])
+
+
 def has_text(path: Path, text: str) -> bool:
     try:
         return text in path.read_text()
@@ -43,6 +63,36 @@ def check_audio(home: Path) -> list[str]:
     generator = str(homebrew_generator) if homebrew_generator.exists() else "scripts/generate-alert-audio.sh"
     generate = f"AGENT_CHIME_AUDIO_DIR={shlex.quote(str(audio_dir))} {generator}"
     return [status((audio_dir / name).is_file(), f"audio {name}", str(audio_dir / name), generate) for name in expected]
+
+
+def check_agent_commands(home: Path) -> list[str]:
+    lines = []
+    local_bin = home / ".local" / "bin"
+    brew_prefix = homebrew_prefix()
+    brew_bin = brew_prefix / "bin" if brew_prefix else None
+
+    for command in AGENT_COMMANDS:
+        resolved = shutil.which(command)
+        lines.append(
+            status(
+                resolved is not None,
+                f"command {command}",
+                resolved or "not found",
+                "brew install dairyfarmer23/agent-sonos-chime/agent-sonos-chime or run scripts/install.sh",
+            )
+        )
+        local_path = local_bin / command
+        brew_path = brew_bin / command if brew_bin else None
+        if resolved and brew_path and brew_path.exists() and local_path.exists() and Path(resolved) == local_path:
+            lines.append(
+                status(
+                    False,
+                    f"Homebrew {command} shadowed",
+                    f"{local_path} is before {brew_path} in PATH",
+                    f"agent-sonos-uninstall --remove-local-files or use {brew_path}",
+                )
+            )
+    return lines
 
 
 def check_claude(home: Path, project: Optional[Path]) -> list[str]:
@@ -87,6 +137,7 @@ def main() -> int:
     for command in ["sonos", "ffmpeg"]:
         lines.append(status(shutil.which(command) is not None, f"command {command}", shutil.which(command) or "not found", command_fixes[command]))
     lines.append(status(shutil.which("edge-tts") is not None, "command edge-tts", shutil.which("edge-tts") or "optional; macOS say fallback can be used", "python3 -m pip install --user edge-tts"))
+    lines.extend(check_agent_commands(args.home))
     lines.extend(check_audio(args.home))
     lines.extend(check_claude(args.home, args.claude_project))
     lines.extend(check_codex(args.home))

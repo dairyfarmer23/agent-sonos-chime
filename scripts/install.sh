@@ -13,6 +13,7 @@ install -m 0755 "$ROOT/bin/codex-notify-sonos-wrapper.sh" "$BIN_DIR/codex-notify
 install -m 0755 "$ROOT/bin/claude-code-sonos-chime.sh" "$BIN_DIR/claude-code-sonos-chime.sh"
 install -m 0755 "$ROOT/scripts/configure-hooks.py" "$BIN_DIR/agent-sonos-configure-hooks"
 install -m 0755 "$ROOT/scripts/diagnose.py" "$BIN_DIR/agent-sonos-diagnose"
+install -m 0755 "$ROOT/scripts/uninstall.sh" "$BIN_DIR/agent-sonos-uninstall"
 
 if [[ ! -f "$AUDIO_DIR/codex-needs-you.mp3" || ! -f "$AUDIO_DIR/codex-run-failed.mp3" || ! -f "$AUDIO_DIR/claude-code-needs-you.mp3" ]]; then
   AGENT_CHIME_AUDIO_DIR="$AUDIO_DIR" "$ROOT/scripts/generate-alert-audio.sh"
@@ -26,6 +27,7 @@ Installed agent Sonos chime scripts:
   $BIN_DIR/claude-code-sonos-chime.sh
   $BIN_DIR/agent-sonos-configure-hooks
   $BIN_DIR/agent-sonos-diagnose
+  $BIN_DIR/agent-sonos-uninstall
 
 Audio files:
   $AUDIO_DIR/codex-needs-you.mp3

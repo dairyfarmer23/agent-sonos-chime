@@ -84,4 +84,12 @@ grep -q "Codex: removed" /tmp/agent-sonos-config-fixture-remove.out
 ! grep -q "codex-notify-sonos-wrapper.sh" "$TMP_HOME/.codex/config.toml"
 grep -q "claude-code-sonos-chime.sh" "$PROJECT_TWO/.claude/settings.json"
 
+HOME="$TMP_HOME" AGENT_CHIME_CONFIGURE="$ROOT/scripts/configure-hooks.py" \
+  "$ROOT/scripts/uninstall.sh" \
+  --all-claude-projects-under "$TMP_HOME/projects" \
+  >/tmp/agent-sonos-config-fixture-uninstall.out
+
+grep -q "Claude project .*projects/two: removed" /tmp/agent-sonos-config-fixture-uninstall.out
+! grep -q "claude-code-sonos-chime.sh" "$PROJECT_TWO/.claude/settings.json"
+
 echo "config-fixtures-ok"

@@ -37,6 +37,12 @@ To remove the hooks later:
 agent-sonos-configure-hooks --remove
 ```
 
+To remove hooks and old `~/.local/bin` copies:
+
+```bash
+agent-sonos-uninstall --remove-local-files
+```
+
 ## Requirements
 
 - macOS or Linux shell environment
@@ -208,6 +214,18 @@ brew tap dairyfarmer23/agent-sonos-chime
 brew install agent-sonos-chime
 ```
 
+If `brew` warns that commands are shadowed by older `~/.local/bin` files, run:
+
+```bash
+~/.local/bin/agent-sonos-uninstall --remove-local-files
+```
+
+Then re-run:
+
+```bash
+agent-sonos-configure-hooks --bin-dir /opt/homebrew/bin
+```
+
 ## Environment Variables
 
 | Variable | Default | Purpose |
@@ -263,7 +281,7 @@ uses Sonos grouping before playback.
 If hooks stop working after an install path change, re-run:
 
 ```bash
-agent-sonos-configure-hooks --remove
+agent-sonos-uninstall
 agent-sonos-configure-hooks --bin-dir /opt/homebrew/bin
 ```
 

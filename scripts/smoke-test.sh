@@ -15,6 +15,7 @@ test -x "$TMP_HOME/.local/bin/codex-notify-sonos-wrapper.sh"
 test -x "$TMP_HOME/.local/bin/claude-code-sonos-chime.sh"
 test -x "$TMP_HOME/.local/bin/agent-sonos-configure-hooks"
 test -x "$TMP_HOME/.local/bin/agent-sonos-diagnose"
+test -x "$TMP_HOME/.local/bin/agent-sonos-uninstall"
 
 test -f "$TMP_HOME/.local/share/agent-sonos-chime/codex-needs-you.mp3"
 test -f "$TMP_HOME/.local/share/agent-sonos-chime/codex-run-failed.mp3"
@@ -29,5 +30,11 @@ grep -q "claude-code-sonos-chime.sh" "$TMP_HOME/.claude/settings.json"
 HOME="$TMP_HOME" "$TMP_HOME/.local/bin/agent-sonos-diagnose" >/tmp/agent-sonos-smoke-diagnose.out
 grep -q "Codex notify wrapper" /tmp/agent-sonos-smoke-diagnose.out
 grep -q "Claude user hook" /tmp/agent-sonos-smoke-diagnose.out
+
+HOME="$TMP_HOME" "$TMP_HOME/.local/bin/agent-sonos-uninstall" >/tmp/agent-sonos-smoke-uninstall.out
+grep -q "Claude Code: removed" /tmp/agent-sonos-smoke-uninstall.out
+grep -q "Codex: removed" /tmp/agent-sonos-smoke-uninstall.out
+! grep -q "claude-code-sonos-chime.sh" "$TMP_HOME/.claude/settings.json"
+! grep -q "codex-notify-sonos-wrapper.sh" "$TMP_HOME/.codex/config.toml"
 
 echo "smoke-test-ok"
