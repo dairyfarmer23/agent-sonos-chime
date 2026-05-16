@@ -91,6 +91,17 @@ $HOME/.local/bin/codex-sonos-chime.sh
 
 Restart Codex after changing settings.
 
+If Codex Desktop does not fire the `Stop` hook when the chat is visibly waiting
+for you, use the notify wrapper instead:
+
+```toml
+notify = ["$HOME/.local/bin/codex-notify-sonos-wrapper.sh"]
+```
+
+If you already have a Codex desktop notifier command, preserve it by setting
+`CODEX_DESKTOP_NOTIFY` before invoking the wrapper, or edit the wrapper to call
+your existing notifier first.
+
 ## Environment Variables
 
 | Variable | Default | Purpose |
