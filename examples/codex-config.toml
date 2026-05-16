@@ -1,6 +1,1 @@
-[[hooks.Stop]]
-[[hooks.Stop.hooks]]
-type = "command"
-command = "bash -lc '$HOME/.local/bin/codex-sonos-chime.sh'"
-timeout = 10
-statusMessage = "Chiming Sonos"
+notify = ["bash", "-lc", "$HOME/.local/bin/codex-notify-sonos-wrapper.sh"]

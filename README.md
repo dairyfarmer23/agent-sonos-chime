@@ -80,22 +80,22 @@ Restart Claude Code after changing settings.
 
 ## Configure Codex
 
-Add the hook from [examples/codex-config.toml](examples/codex-config.toml)
+Add the notify wrapper from [examples/codex-config.toml](examples/codex-config.toml)
 to `~/.codex/config.toml`.
 
 The important command is:
 
 ```bash
-$HOME/.local/bin/codex-sonos-chime.sh
+$HOME/.local/bin/codex-notify-sonos-wrapper.sh
 ```
 
 Restart Codex after changing settings.
 
-If Codex Desktop does not fire the `Stop` hook when the chat is visibly waiting
-for you, use the notify wrapper instead:
+The Codex desktop app's visible "waiting for you" state is most reliably covered
+by `notify`:
 
 ```toml
-notify = ["$HOME/.local/bin/codex-notify-sonos-wrapper.sh"]
+notify = ["bash", "-lc", "$HOME/.local/bin/codex-notify-sonos-wrapper.sh"]
 ```
 
 If you already have a Codex desktop notifier command, preserve it by setting

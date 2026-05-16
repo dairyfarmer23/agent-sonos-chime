@@ -9,6 +9,7 @@ AUDIO_DIR="${HOME}/.local/share/agent-sonos-chime"
 mkdir -p "$BIN_DIR" "$AUDIO_DIR"
 install -m 0755 "$ROOT/bin/agent-sonos-chime.sh" "$BIN_DIR/agent-sonos-chime.sh"
 install -m 0755 "$ROOT/bin/codex-sonos-chime.sh" "$BIN_DIR/codex-sonos-chime.sh"
+install -m 0755 "$ROOT/bin/codex-notify-sonos-wrapper.sh" "$BIN_DIR/codex-notify-sonos-wrapper.sh"
 install -m 0755 "$ROOT/bin/claude-code-sonos-chime.sh" "$BIN_DIR/claude-code-sonos-chime.sh"
 
 if [[ ! -f "$AUDIO_DIR/codex-needs-you.mp3" || ! -f "$AUDIO_DIR/claude-code-needs-you.mp3" ]]; then
@@ -19,6 +20,7 @@ cat <<EOF
 Installed agent Sonos chime scripts:
   $BIN_DIR/agent-sonos-chime.sh
   $BIN_DIR/codex-sonos-chime.sh
+  $BIN_DIR/codex-notify-sonos-wrapper.sh
   $BIN_DIR/claude-code-sonos-chime.sh
 
 Audio files:
