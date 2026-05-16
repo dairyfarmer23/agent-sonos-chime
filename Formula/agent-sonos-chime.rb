@@ -1,7 +1,7 @@
 class AgentSonosChime < Formula
   desc "Synced Sonos alerts for Codex and Claude Code hooks"
   homepage "https://github.com/dairyfarmer23/agent-sonos-chime"
-  url "https://github.com/dairyfarmer23/agent-sonos-chime.git", tag: "v0.1.0"
+  url "https://github.com/dairyfarmer23/agent-sonos-chime.git", tag: "v0.2.0"
   license "MIT"
 
   depends_on "ffmpeg"
@@ -12,6 +12,7 @@ class AgentSonosChime < Formula
     bin.install "bin/codex-notify-sonos-wrapper.sh"
     bin.install "bin/claude-code-sonos-chime.sh"
     bin.install "scripts/configure-hooks.py" => "agent-sonos-configure-hooks"
+    bin.install "scripts/diagnose.py" => "agent-sonos-diagnose"
     pkgshare.install "scripts/generate-alert-audio.sh"
     pkgshare.install "examples"
   end
@@ -31,11 +32,15 @@ class AgentSonosChime < Formula
 
       Configure hooks:
         agent-sonos-configure-hooks --bin-dir #{bin}
+
+      Diagnose setup:
+        agent-sonos-diagnose
     EOS
   end
 
   test do
     system "bash", "-n", "#{bin}/agent-sonos-chime.sh"
     system "python3", "-m", "py_compile", "#{bin}/agent-sonos-configure-hooks"
+    system "python3", "-m", "py_compile", "#{bin}/agent-sonos-diagnose"
   end
 end

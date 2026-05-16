@@ -22,8 +22,11 @@ local Sonos network and local hook configuration.
 ```bash
 brew install steipete/tap/sonoscli ffmpeg
 python3 -m pip install --user edge-tts
-curl -fsSL https://raw.githubusercontent.com/dairyfarmer23/agent-sonos-chime/main/scripts/install-remote.sh | bash
-~/.local/bin/agent-sonos-configure-hooks
+brew tap dairyfarmer23/agent-sonos-chime
+brew install agent-sonos-chime
+AGENT_CHIME_AUDIO_DIR="$HOME/.local/share/agent-sonos-chime" \
+  /opt/homebrew/opt/agent-sonos-chime/share/agent-sonos-chime/generate-alert-audio.sh
+agent-sonos-configure-hooks --bin-dir /opt/homebrew/bin
 ```
 
 Restart Codex and Claude Code after running the config helper.
@@ -47,7 +50,17 @@ or generate audio with the fallback macOS `say` voice.
 
 ## Install
 
-Preferred one-command install:
+Recommended Homebrew install:
+
+```bash
+brew tap dairyfarmer23/agent-sonos-chime
+brew install agent-sonos-chime
+AGENT_CHIME_AUDIO_DIR="$HOME/.local/share/agent-sonos-chime" \
+  /opt/homebrew/opt/agent-sonos-chime/share/agent-sonos-chime/generate-alert-audio.sh
+agent-sonos-configure-hooks --bin-dir /opt/homebrew/bin
+```
+
+One-command fallback:
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/dairyfarmer23/agent-sonos-chime/main/scripts/install-remote.sh | bash
@@ -65,6 +78,12 @@ Then patch Codex and Claude Code configs:
 
 ```bash
 ~/.local/bin/agent-sonos-configure-hooks
+```
+
+Fresh install smoke test:
+
+```bash
+scripts/smoke-test.sh
 ```
 
 Test discovery:
@@ -93,6 +112,18 @@ Run the config helper:
 
 ```bash
 ~/.local/bin/agent-sonos-configure-hooks --claude-only
+```
+
+Patch one project-level Claude settings file:
+
+```bash
+~/.local/bin/agent-sonos-configure-hooks --claude-project /path/to/project
+```
+
+Patch every project-level Claude settings file under a root:
+
+```bash
+~/.local/bin/agent-sonos-configure-hooks --all-claude-projects-under /path/to/root
 ```
 
 Or manually add the hook entries from
@@ -143,20 +174,30 @@ If you already have a Codex desktop notifier command, preserve it by setting
 `CODEX_DESKTOP_NOTIFY` before invoking the wrapper, or edit the wrapper to call
 your existing notifier first.
 
-## Experimental Homebrew Formula
+## Diagnostics
 
-This repo includes a starter formula in `Formula/agent-sonos-chime.rb`.
-
-From a checkout:
+Run a read-only setup report:
 
 ```bash
-brew install --build-from-source ./Formula/agent-sonos-chime.rb
-AGENT_CHIME_AUDIO_DIR="$HOME/.local/share/agent-sonos-chime" \
-  /opt/homebrew/opt/agent-sonos-chime/share/agent-sonos-chime/generate-alert-audio.sh
-agent-sonos-configure-hooks --bin-dir /opt/homebrew/bin
+agent-sonos-diagnose
 ```
 
-The formula is experimental until it moves to a dedicated Homebrew tap.
+Run a playback test for one room:
+
+```bash
+agent-sonos-diagnose --room Kitchen --play-test
+```
+
+## Homebrew Tap
+
+The Homebrew formula lives in `dairyfarmer23/homebrew-agent-sonos-chime`.
+
+Install:
+
+```bash
+brew tap dairyfarmer23/agent-sonos-chime
+brew install agent-sonos-chime
+```
 
 ## Environment Variables
 
@@ -214,8 +255,8 @@ uses Sonos grouping before playback.
   the hook.
 - Rooms that are already playing audio are skipped so the alert does not
   interrupt music or TV playback.
-- The Homebrew formula in `Formula/` is experimental until this project has a
-  dedicated tap.
+- Homebrew installs still need local audio generation because generated voice
+  MP3s are intentionally not committed.
 
 ## Demo
 

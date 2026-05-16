@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Merge Agent Sonos Chime hooks into user-level Claude Code and Codex config."""
+"""Merge Agent Sonos Chime hooks into Claude Code and Codex config."""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ import json
 import shutil
 from datetime import datetime
 from pathlib import Path
-from typing import Optional, Tuple
+from typing import Iterable, Optional, Tuple
 
 DEFAULT_BIN_DIR = "$HOME/.local/bin"
 
@@ -60,8 +60,7 @@ def ensure_claude_hook(data: dict, event: str, command: str) -> bool:
     return True
 
 
-def configure_claude(home: Path, dry_run: bool, bin_dir: str) -> Tuple[bool, Optional[Path]]:
-    path = home / ".claude" / "settings.json"
+def configure_claude_file(path: Path, dry_run: bool, bin_dir: str) -> Tuple[bool, Optional[Path]]:
     if path.exists() and path.read_text().strip():
         data = json.loads(path.read_text())
     else:
@@ -79,6 +78,21 @@ def configure_claude(home: Path, dry_run: bool, bin_dir: str) -> Tuple[bool, Opt
         backup_path = backup(path)
         path.write_text(json.dumps(data, indent=2) + "\n")
     return True, backup_path
+
+
+def configure_claude(home: Path, dry_run: bool, bin_dir: str) -> Tuple[bool, Optional[Path]]:
+    return configure_claude_file(home / ".claude" / "settings.json", dry_run, bin_dir)
+
+
+def project_settings_path(project: Path) -> Path:
+    return project / ".claude" / "settings.json"
+
+
+def iter_claude_projects(root: Path) -> Iterable[Path]:
+    for path in root.rglob(".claude/settings.json"):
+        if ".git" in path.parts:
+            continue
+        yield path.parent.parent
 
 
 def configure_codex(home: Path, dry_run: bool, bin_dir: str) -> Tuple[bool, Optional[Path]]:
@@ -121,6 +135,8 @@ def main() -> int:
     parser.add_argument("--dry-run", action="store_true", help="report changes without writing")
     parser.add_argument("--claude-only", action="store_true", help="only patch Claude Code settings")
     parser.add_argument("--codex-only", action="store_true", help="only patch Codex config")
+    parser.add_argument("--claude-project", type=Path, action="append", default=[], help="patch .claude/settings.json in this project")
+    parser.add_argument("--all-claude-projects-under", type=Path, action="append", default=[], help="patch every .claude/settings.json under this root")
     args = parser.parse_args()
 
     if args.claude_only and args.codex_only:
@@ -132,6 +148,22 @@ def main() -> int:
         changes.append(f"Claude Code: {'would update' if args.dry_run and changed else 'updated' if changed else 'already configured'}")
         if backup_path:
             changes.append(f"  backup: {backup_path}")
+
+        project_paths = list(args.claude_project)
+        for root in args.all_claude_projects_under:
+            project_paths.extend(iter_claude_projects(root))
+        seen: set[Path] = set()
+        for project in project_paths:
+            project = project.expanduser().resolve()
+            if project in seen:
+                continue
+            seen.add(project)
+            path = project_settings_path(project)
+            changed, backup_path = configure_claude_file(path, args.dry_run, args.bin_dir)
+            status = "would update" if args.dry_run and changed else "updated" if changed else "already configured"
+            changes.append(f"Claude project {project}: {status}")
+            if backup_path:
+                changes.append(f"  backup: {backup_path}")
 
     if not args.claude_only:
         changed, backup_path = configure_codex(args.home, args.dry_run, args.bin_dir)

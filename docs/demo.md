@@ -4,6 +4,8 @@ Agent Sonos Chime turns local agent completion events into synced Sonos alerts.
 
 ![Agent Sonos Chime terminal demo](agent-sonos-chime-demo.svg)
 
+Video version: [agent-sonos-chime-demo.mp4](agent-sonos-chime-demo.mp4)
+
 Flow:
 
 1. Codex or Claude Code reaches a point where it needs attention.
