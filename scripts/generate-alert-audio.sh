@@ -46,9 +46,11 @@ fi
 
 if command -v edge-tts >/dev/null 2>&1; then
   generate_with_edge_tts "en-US-GuyNeural" "Codex needs you. Please check in when you have a moment." "$OUT_DIR/codex-needs-you.mp3"
+  generate_with_edge_tts "en-US-GuyNeural" "Codex run failed. Please check the error." "$OUT_DIR/codex-run-failed.mp3"
   generate_with_edge_tts "en-US-AvaNeural" "Claude Code needs you. Please check in when you have a moment." "$OUT_DIR/claude-code-needs-you.mp3"
 elif command -v say >/dev/null 2>&1; then
   generate_with_macos_say "Daniel" "Codex needs you. Please check in when you have a moment." "$OUT_DIR/codex-needs-you.mp3"
+  generate_with_macos_say "Daniel" "Codex run failed. Please check the error." "$OUT_DIR/codex-run-failed.mp3"
   generate_with_macos_say "Samantha" "Claude Code needs you. Please check in when you have a moment." "$OUT_DIR/claude-code-needs-you.mp3"
 else
   echo "Install edge-tts or use macOS say to generate alert audio" >&2

@@ -10,6 +10,8 @@ local Sonos network and local hook configuration.
 
 - Discovers Sonos speakers on the local network.
 - Plays a Codex or Claude Code voice alert.
+- Uses a separate "Codex run failed" alert when Codex notify payloads mention
+  a failure, error, crash, timeout, or non-zero exit.
 - Groups stopped rooms first so multi-room playback stays in sync.
 - Skips rooms that are already playing audio.
 - Restores volume and grouping after playback.
@@ -110,6 +112,7 @@ your existing notifier first.
 | `AGENT_CHIME_SONOS_COORDINATOR` | `Kitchen` | Preferred room to coordinate synced playback |
 | `AGENT_CHIME_VOLUME` | `35` | Temporary alert volume |
 | `AGENT_CHIME_SOUND` | Codex alert MP3 | Audio file to play |
+| `AGENT_CHIME_FAILURE_SOUND` | Codex failure MP3 | Audio file for failed Codex notify events |
 | `AGENT_CHIME_COOLDOWN_SECONDS` | `20` | Minimum seconds between alerts |
 
 Example:
